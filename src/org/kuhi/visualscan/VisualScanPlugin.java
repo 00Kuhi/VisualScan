@@ -28,17 +28,25 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 
 	// SHAPE percentages
 	private static final Integer ES_PERCENT = new Integer(100);
-	private static final Integer GS_PERCENT = new Integer(90);
-	private static final Integer SH_PERCENT = new Integer(80);
+	private static final Integer GS_PERCENT = new Integer(85);
+	private static final Integer SH_PERCENT = new Integer(70);
 	private static final Integer NH_PERCENT = new Integer(50);
 	private static final Integer NIGS_PERCENT = new Integer(35);
 	private static final Integer BS_PERCENT = new Integer(20);
 	private static final Integer VBS_PERCENT = new Integer(10);
 	private static final Integer ND_PERCENT = new Integer(5); 
 	
+	private static final String ES = "ES";
+	private static final String GS = "GS";
+	private static final String SH = "SH";
+	private static final String NH = "NH";
+	private static final String NIGS = "NIGS";
+	private static final String BS = "BS";
+	private static final String VBS = "VBS";
+	private static final String ND = "ND"; 
+
 	// Scanned monster names and shapes
-	private ArrayList<String> names = new ArrayList<>();
-	private ArrayList<Integer> shapes = new ArrayList<>();
+	private ArrayList<ScanShape> shapes = new ArrayList<>();
 	
 	private ScanPanel scan_panel;
 	
@@ -46,7 +54,7 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 	private boolean GAG = true;
 	
 	public VisualScanPlugin() {
-		scan_panel = new ScanPanel(names,shapes);
+		scan_panel = new ScanPanel(shapes);
 	}
 	
 	public void loadPlugin() {
@@ -59,7 +67,7 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 		window.setVisible(true);
 		
 		//Create scan panel
-		scan_panel = new ScanPanel(names, shapes);
+		scan_panel = new ScanPanel(shapes);
 		scan_panel.setVisible(true);		
 		scan_panel.setOpaque(false);
 		window.newTab("Scan", scan_panel);
@@ -68,9 +76,9 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 		scan_panel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				int click_target = (int)((e.getY()-10)/25);
-				if( names.size() > click_target ) {
-					getClientGUI().doCommand("target "+names.get(click_target));
+				int click_target = (int)((e.getY()-4)/25);
+				if( shapes.size() > click_target ) {
+					getClientGUI().doCommand("target "+shapes.get(click_target).getName());
 				}
 			}		
 		});
@@ -87,7 +95,6 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 		// Clear scan info on start of the round
 		Matcher m = round_pattern.matcher(original);
 		if( m.matches() ) {
-			names.clear();
 			shapes.clear();
 		}
 		
@@ -100,50 +107,50 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 		
 		m = es_pattern.matcher(original);
 		if( m.matches() ) {
-			return addScanResult(m.group(1),ES_PERCENT,line);
+			return addScanResult(m.group(1),ES_PERCENT,ES,line);
 		}
 				
 		m = gs_pattern.matcher(original);
 		if( m.matches() ) {
-			return addScanResult(m.group(1),GS_PERCENT,line);
+			return addScanResult(m.group(1),GS_PERCENT,GS,line);
 		}
 
 		m = sh_pattern.matcher(original);
 		if( m.matches() ) {
-			return addScanResult(m.group(1),SH_PERCENT,line);
+			return addScanResult(m.group(1),SH_PERCENT,SH,line);
 		}
 
 		m = nh_pattern.matcher(original);
 		if( m.matches() ) {
-			return addScanResult(m.group(1),NH_PERCENT,line);
+			return addScanResult(m.group(1),NH_PERCENT,NH,line);
 		}
 		
 		m = nigs_pattern.matcher(original);
 		if( m.matches() ) {
-			return addScanResult(m.group(1),NIGS_PERCENT,line);
+			return addScanResult(m.group(1),NIGS_PERCENT,NIGS,line);
 		}
 
 		m = bs_pattern.matcher(original);
 		if( m.matches() ) {
-			return addScanResult(m.group(1),BS_PERCENT,line);
+			return addScanResult(m.group(1),BS_PERCENT,BS,line);
 		}
 
 		m = vbs_pattern.matcher(original);
 		if( m.matches() ) {
-			return addScanResult(m.group(1),VBS_PERCENT,line);
+			return addScanResult(m.group(1),VBS_PERCENT,VBS,line);
 		}
 		
 		m = nd_pattern.matcher(original);
 		if( m.matches() ) {
-			return addScanResult(m.group(1),ND_PERCENT,line);
+			return addScanResult(m.group(1),ND_PERCENT,ND,line);
 		}
 
 		return null;
 	}
 	
-	private ParsedResult addScanResult(String name, Integer shape, ParsedResult result) {
-		names.add(name);
-		shapes.add(shape);
+	private ParsedResult addScanResult(String name, Integer shape, String shapeName, ParsedResult result) {
+		ScanShape scanShape = new ScanShape(name,shape,shapeName);
+		shapes.add(scanShape);
 		scan_panel.repaint();
 		// Gag scan text from 'general' if set
 		return (GAG)?new ParsedResult(""):result;
