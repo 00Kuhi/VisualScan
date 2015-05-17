@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Visual Scan" default="build" basedir="."> 
+  <target name="build">
+    <echo>Building Visual Scan</echo>
+	<jar destfile="visualscan.jar"
+	       basedir="bin"
+	  />  		
+  </target>
+</project>
