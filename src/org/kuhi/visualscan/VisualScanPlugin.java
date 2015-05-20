@@ -49,9 +49,7 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 	private ArrayList<ScanShape> shapes = new ArrayList<>();
 	
 	private ScanPanel scan_panel;
-	
-	// Gag rounds scan lines
-	private boolean GAG = true;
+	private SettingsPanel settings_panel;
 	
 	public VisualScanPlugin() {
 		scan_panel = new ScanPanel(shapes);
@@ -82,6 +80,12 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 				}
 			}		
 		});
+		
+		// create settings panel
+		settings_panel = new SettingsPanel();
+		settings_panel.init();
+		settings_panel.setVisible(true);
+		window.newTab("Settings", settings_panel);
 		
 		cgui.printText("general", "Initialized Scan Panel");
 		
@@ -152,8 +156,8 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 		ScanShape scanShape = new ScanShape(name,shape,shapeName);
 		shapes.add(scanShape);
 		scan_panel.repaint();
-		// Gag scan text from 'general' if set
-		return (GAG)?new ParsedResult(""):result;
+		// Gag scan text from 'general' if hide rounds scan is set
+		return (settings_panel.hideRoundsScans())?new ParsedResult(""):result;
 	}
 	
 	@Override
