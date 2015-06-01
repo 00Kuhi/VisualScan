@@ -24,6 +24,7 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 	private static Pattern bs_pattern = Pattern.compile("(.*) is in bad shape \\(.*\n");
 	private static Pattern vbs_pattern = Pattern.compile("(.*) is in very bad shape \\(.*\n");
 	private static Pattern nd_pattern = Pattern.compile("(.*) is near death \\(.*\n");
+	private static Pattern dead_pattern = Pattern.compile("(.*) is DEAD, R.I.P.\n");
 	private static Pattern target_pattern = Pattern.compile("^You are now targetting (.*).\n");
 
 	// SHAPE percentages
@@ -34,7 +35,7 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 	private static final Integer NIGS_PERCENT = new Integer(35);
 	private static final Integer BS_PERCENT = new Integer(20);
 	private static final Integer VBS_PERCENT = new Integer(10);
-	private static final Integer ND_PERCENT = new Integer(5); 
+	private static final Integer ND_PERCENT = new Integer(5);
 	
 	private static final String ES = "ES";
 	private static final String GS = "GS";
@@ -43,7 +44,7 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 	private static final String NIGS = "NIGS";
 	private static final String BS = "BS";
 	private static final String VBS = "VBS";
-	private static final String ND = "ND"; 
+	private static final String ND = "ND";
 
 	// Scanned monster names and shapes
 	private ArrayList<ScanShape> shapes = new ArrayList<>();
@@ -149,6 +150,12 @@ public class VisualScanPlugin extends BatClientPlugin implements BatClientPlugin
 			return addScanResult(m.group(1),ND_PERCENT,ND,line);
 		}
 
+		// If someone dies refresh
+		m = dead_pattern.matcher(original);
+		if( m.matches() ) {
+			scan_panel.repaint();
+			return line;
+		}
 		return null;
 	}
 	
